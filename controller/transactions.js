@@ -15,7 +15,7 @@ exports.getTransactions = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: err,
     });
   }
 };
@@ -45,7 +45,7 @@ exports.addTransactions = async (req, res, next) => {
     } else {
       return res.status(500).json({
         success: false,
-        error: err.Error,
+        error: err,
       });
     }
     // console.log(err);
@@ -74,7 +74,7 @@ exports.deleteTransactions = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: err,
     });
     // console.log(err);
     // process.exit();
