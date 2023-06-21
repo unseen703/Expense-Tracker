@@ -1,6 +1,7 @@
 import React, { createContext, useReducer } from "react";
 import AppReducer from "./AppReducer"
 import axios from "axios";
+// import { getTransaction , deleteTransaction, addTransaction } from "./Actions";
 // Initital State
 const initialState = {
   transactions: [],
@@ -17,9 +18,8 @@ export const GlobalContext = createContext(initialState);
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
 
-  
   //Actions
-  async function getTransaction(){
+  const getTransaction =  async ()=>{
     try {
       const res = await axios.get('api/v1/transactions');
     dispatch({
@@ -34,7 +34,7 @@ export const GlobalProvider = ({ children }) => {
       
     }
   }
- async function deleteTransaction(id){
+  const deleteTransaction =  async(id)=>{
     try {
       await axios.delete(`/api/v1/transactions/${id}`);
       dispatch({
@@ -50,7 +50,7 @@ export const GlobalProvider = ({ children }) => {
     
   }
   
-  async function addTransaction(transaction){
+  const addTransaction = async (transaction)=>{
     const config = {
       headers:{
         'Content-Type':'application/json'
@@ -58,6 +58,7 @@ export const GlobalProvider = ({ children }) => {
     }
     try {
       const res = await axios.post('/api/v1/transactions', transaction, config);
+      // console.log(res);
       dispatch({
         type:'ADD_TRANSACTION',
         payload :res.data.data
@@ -65,12 +66,13 @@ export const GlobalProvider = ({ children }) => {
     } catch (error) {
       dispatch({
         type: 'TRANSACTION_ERROR',
-        payload : error.responce.data
+        payload : error,
       })  
       
     }
    
   }
+  
   return (
     <GlobalContext.Provider
       value={{

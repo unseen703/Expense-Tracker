@@ -1,17 +1,22 @@
 const mongoose = require('mongoose');
 const TransactionSchema = new mongoose.Schema({
-    text:{
+    
+    type:{
         type:String,
-        trim:true,
-        required : [true, 'Please add some text']
+        required : [true, 'Please select a type']
+    },
+    category:{
+        type:String,
+        required : [true, 'Please select a catagory']
     },
     amount:{
         type:Number,
-        required:[true, 'Please add aposititve or negative number']
+        required:[true, 'Please add valid amount']
     },
-    createdat:{
+    date:{
         type:Date,
-        default: Date.now
+        required: [true, 'Please add appropriate date']
     },
+    
 });
 module.exports = mongoose.model('Transaction', TransactionSchema);
