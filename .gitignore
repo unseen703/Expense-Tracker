@@ -5,18 +5,18 @@
 .env
 /.pnp
 .pnp.js
-/client
-config/config.env
-/config
+client/
+
+/config.env
+
 # testing
 /coverage
 
 # production
-/client/build
-
+/
 # misc
 .DS_Store
-*.env
+**.env
 .env.local
 .env.development.local
 .env.test.local
