@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { GlobalContext } from "../../../context/GlobalState";
+import moment from "moment";
 import {
   TextField,
   Typography,
@@ -22,6 +23,7 @@ import {
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import useStyles from "./styles";
+import CustomizedSnackBar from "../../SnackBar/SnackBar";
 
 const initialState = {
   type: "",
@@ -32,14 +34,22 @@ const initialState = {
 
 const AddTransaction = () => {
   const classes = useStyles();
-  const {segment } = useSpeechContext();
+  const { segment } = useSpeechContext();
   const [formData, setFormData] = useState(initialState);
-  const selectedCatagories =
-    formData.type === "Income" ? incomeCategories : expenseCategories;
-
-  // function from global provider
-
+  const [open, setOpen] = useState(false);
   const { addTransaction } = useContext(GlobalContext);
+  // function from global provider
+  // const { segment , listening } = useSpeechContext();
+  // const main = React.useRef(null);
+
+  // const executeScroll = () => main.current.scrollIntoView();
+
+  // useEffect(() => {
+  //   // console.log(SpeechState);
+  //   if(listening)                         
+  //   {  executeScroll();}
+    
+  // }, [segment]);
 
   const handleNullSubmit = () => {
     confirmAlert({
@@ -51,22 +61,31 @@ const AddTransaction = () => {
       ],
     });
   };
-  const onSubmit = (e) => {
-    e.preventDefault();
-
+  const createTransaction = () => {
     if (
+      Number.isNaN(formData.amount) ||
       formData.type === "" ||
       formData.category === "" ||
       formData.amount === ""
     ) {
       handleNullSubmit();
+      setFormData(initialState);
+      return;
     } else {
+      if (incomeCategories.map((iC) => iC.type).includes(formData.category)) {
+        setFormData({ ...formData, type: "Income" });
+      } else if (
+        expenseCategories.map((iC) => iC.type).includes(formData.category)
+      ) {
+        setFormData({ ...formData, type: "Expense" });
+      }
       const newTransaction = {
         type: formData.type,
         category: formData.category,
         amount: formData.amount,
         date: formData.date,
       };
+      setOpen(true);
       addTransaction(newTransaction);
     }
 
@@ -74,8 +93,75 @@ const AddTransaction = () => {
     setFormData(initialState);
   };
 
+  useEffect(() => {
+    if (segment) {
+      if (segment.intent.intent === "add_income") {
+        setFormData({ ...formData, type: "Income" });
+        // selectedCatagories = incomeCategories;
+      } else if (segment.intent.intent === "add_expense") {
+        setFormData({ ...formData, type: "Expense" });
+        // selectedCatagories = expenseCategories;
+      } else if (
+        segment.isFinal &&
+        segment.intent.intent === "create_transaction"
+      ) {
+        return createTransaction();
+      } else if (
+        segment.isFinal &&
+        segment.intent.intent === "cancel_transaction"
+      ) {
+        return setFormData(initialState);
+      }
+
+      segment.entities.forEach((e) => {
+        const category = `${e.value.charAt(0)}${e.value
+          .slice(1)
+          .toLowerCase()}`;
+        console.log(e.value);
+        switch (e.type) {
+          case "amount":
+            setFormData({ ...formData, amount: e.value });
+            break;
+          case "category":
+            if (incomeCategories.map((iC) => iC.type).includes(category)) {
+              setFormData({ ...formData, type: "Income", category });
+            } else if (
+              expenseCategories.map((iC) => iC.type).includes(category)
+            ) {
+              setFormData({ ...formData, type: "Expense", category });
+            }
+            break;
+          case "date":
+            setFormData({ ...formData, date: moment(e.target.value).format("YYYY-MM-DD") });
+            break;
+          default:
+            break;
+        }
+      });
+      if (
+        segment.isFinal &&
+        formData.amount &&
+        formData.category &&
+        formData.type &&
+        formData.date
+      ) {
+        createTransaction();
+        setFormData(initialState);
+      }
+    }
+    // eslint-disable-next-line
+  }, [segment]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    createTransaction();
+  };
+  const selectedCatagories =
+    formData.type === "Income" ? incomeCategories : expenseCategories;
+
   return (
     <Grid container spacing={2}>
+    <CustomizedSnackBar open = {open} setOpen= {setOpen}/>
       <Grid item xs={12}>
         <Typography variant="h5" align="center" className={classes.h5Heading}>
           Add New Transaction
@@ -83,11 +169,7 @@ const AddTransaction = () => {
       </Grid>
       <Grid item xs={12}>
         <Typography variant="subtitle2" align="center">
-          {segment&&(
-            <>
-              {segment.words.map((w)=> w.value).join(" ")}
-            </>
-          )}
+          {segment && <>{segment.words.map((w) => w.value).join(" ")}</>}
         </Typography>
       </Grid>
       <Grid item xs={6}>
@@ -145,7 +227,7 @@ const AddTransaction = () => {
           type="date"
           label="date"
           value={formData.date}
-          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+          onChange={(e) => setFormData({ ...formData, date: moment(e.target.value).format("YYYY-MM-DD") })}
           fullWidth
         />
       </Grid>
@@ -158,24 +240,6 @@ const AddTransaction = () => {
       >
         Create
       </Button>
-
-      {/* </div> */}
-      {/* <div className="form-control">
-          <label htmlFor="amount">
-            Amount <br />
-            (negative - expense, positive - income)
-          </label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount..."
-          />
-        </div>
-        <button className="btn" type="submit">
-          Submit
-        </button> */}
-      {/* </FormControl> */}
     </Grid>
   );
 };

@@ -21,6 +21,25 @@ body {
   background-color: azure; 
   /* width: 350px; */
 }
+
+@media (max-width: 1150px) {
+  .mobile {
+    display: none;
+  }
+
+}
+@media (min-width: 768px) ,  (max-width:1150px) {
+  .desktopi {
+    margin: 60px;
+  }
+ 
+}
+
+@media (min-width: 1150px) {
+  .desktopi {
+   display: none;
+  }
+}
 /*
 h1 {
   letter-spacing: 1px;

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { GlobalContext } from "../../context/GlobalState";
+
 import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import {
@@ -15,22 +17,38 @@ import TransactionList from "../List/TransactionList.js";
 import AddTransaction from "./Form/AddTransaction.js";
 
 import useStyles from "./styles.js";
+import InfoCard from "../InfoCard";
+import { useSpeechContext } from "@speechly/react-client";
+import { useEffect } from "react";
 const Form = () => {
+  const { balance } = useContext(GlobalContext);
   const classes = useStyles();
   const [toggle, setToggle] = useState(false);
+
+  const { segment, listening } = useSpeechContext();
+
+  // const executeScroll = () => main.current.scrollIntoView();
+
+  useEffect(() => {
+    // console.log(SpeechState);
+    if (listening && toggle === false) {
+      setToggle(!toggle);
+    }
+    // eslint-disable-next-line
+  }, [segment]);
+
   return (
     <Card className={classes.root}>
       <CardHeader title={"Expense Tracker"} subheader="Powered by Speechly" />
       <CardContent>
         <Typography variant="h5" align="center">
-          Your Balance $100
+          Your Balance ₹{balance}
         </Typography>
         <Typography
           variant="subtitle1"
           style={{ lineHeight: "1.5em", marginTop: "20px" }}
         >
-          Try saying: Add income of $100 in Catagory salary for previous
-          Monday.....
+          <InfoCard />
         </Typography>
         <Divider className={classes.divider} />
       </CardContent>

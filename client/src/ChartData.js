@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import {  useRef } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import useTransactions from './useTransactions';
 import 'chart.js/auto'; // ADD THIS

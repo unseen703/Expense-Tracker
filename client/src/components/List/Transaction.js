@@ -5,26 +5,21 @@ import MoneyOff from "@material-ui/icons/MoneyOff";
 import AttachMoney from "@material-ui/icons/AttachMoney";
 import * as moment from "moment";
 import {
-  ListItem,
   ListItemAvatar,
   ListItemText,
   Avatar,
   ListItemSecondaryAction,
   IconButton,
-  Button,
 } from "@material-ui/core";
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 
-import useStyles from "./styles";
 const Transaction = ({ transaction }) => {
-  const classes = useStyles();
   const { deleteTransaction } = useContext(GlobalContext);
-  console.log(transaction.type);
-  // const sign = transaction.type === "Expense" ? "-" : "+";
+
   const handleOnClick = (e) => {
     e.preventDefault();
-    // console.log(e);
+
     confirmAlert({
       title: "Confirm to Delete the Transaction",
       message: "Are you sure you want to Delete this Transaction .",
@@ -45,23 +40,21 @@ const Transaction = ({ transaction }) => {
   return (
     <>
       <ListItemAvatar>
-        {  (transaction.type === "Income")?<Avatar
-          style={{ background:"#4caf50"}}
-
-        >
-          <AttachMoney />
-        </Avatar> :
-        <Avatar
-          style={{ background:"#f44336"}}
-
-        >
-          <MoneyOff />
-        </Avatar>
-         }
+        {transaction.type === "Income" ? (
+          <Avatar style={{ background: "#4caf50" }}>
+            <AttachMoney />
+          </Avatar>
+        ) : (
+          <Avatar style={{ background: "#f44336" }}>
+            <MoneyOff />
+          </Avatar>
+        )}
       </ListItemAvatar>
       <ListItemText
         primary={transaction.category}
-        secondary={`₹${transaction.amount}-${moment(transaction.date).format('D-MM-YYYY')}`}
+        secondary={`₹${transaction.amount}     ${moment(transaction.date).format(
+          "YYYY-MM-DD"
+        )}`}
       />
       <ListItemSecondaryAction>
         <IconButton edge="end" aria-label="delete" onClick={handleOnClick}>
