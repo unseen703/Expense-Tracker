@@ -13,7 +13,7 @@ exports.getTransactions = async (req, res, next)=>{
     catch(err){
 return res.status(500).json({
     success: false,
-    error: 'Server Error'
+    error: err
 });
     }
 }
@@ -29,17 +29,17 @@ exports.addTransactions = async(req, res, next)=>{
     }); }
     catch(err){
         if(err.name === 'ValidationError'){
-            const messages = Object.values(err.errors).map(val => val.text);
+            // const messages = Object.values(err.errors).map(val => val.text);
             return res.status(400).json({
                 success: false,
                 // message : "please add text",
-                error: messages
+                error:err
             });
         }
         else {
             return res.status(500).json({
                 success: false,
-                error: 'Server Error'
+                error: err
             });
         }
 // console.log(err);
@@ -68,7 +68,7 @@ exports.deleteTransactions = async (req, res, next)=>{
     catch(err){
         return res.status(500).json({
             success: false,
-            error: 'Server Error'
+            error: err
         });
 // console.log(err);
 // process.exit();
