@@ -3,10 +3,10 @@ const Transaction = require("../models/transactions");
 // @routes GET/api/v1/transactions
 // 0@access Public
 exports.getTransactions = async (req, res, next) => {
-  // res.send("GET transactions")
+  res.send("GET transactions")
   try {
     const transactions = await Transaction.find();
-    // console.log(transactions);
+    console.log(transactions);
     return res.status(200).json({
       success: true,
       count: transactions.length,
