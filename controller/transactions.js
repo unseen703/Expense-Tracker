@@ -3,10 +3,10 @@ const Transaction = require("../models/transactions");
 // @routes GET/api/v1/transactions
 // 0@access Public
 exports.getTransactions = async (req, res, next) => {
-  // res.send("GET transactions")
+  console.log("GET transactions")
   try {
     const transactions = await Transaction.find();
-    console.log(transactions);
+    // console.log(transactions);
     return res.status(200).json({
       success: true,
       count: transactions.length,
@@ -15,7 +15,7 @@ exports.getTransactions = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: err,
     });
   }
 };
@@ -26,10 +26,10 @@ exports.addTransactions = async (req, res, next) => {
   try {
     const { type,category, amount , date} = req.body;
     const newTran = { type, category, amount, date}
-    console.log(req.body);
+    // console.log(req.body);
     
     const transaction = await Transaction.create(newTran);
-    console.log(transaction);
+    // console.log(transaction);
     return res.status(201).json({
       success: true,
       data: transaction,
@@ -45,7 +45,7 @@ exports.addTransactions = async (req, res, next) => {
     } else {
       return res.status(500).json({
         success: false,
-        error: err.Error,
+        error: err,
       });
     }
     // console.log(err);
@@ -74,7 +74,7 @@ exports.deleteTransactions = async (req, res, next) => {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: err,
     });
     // console.log(err);
     // process.exit();
