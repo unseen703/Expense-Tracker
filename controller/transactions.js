@@ -3,7 +3,7 @@ const Transaction = require("../models/transactions");
 // @routes GET/api/v1/transactions
 // 0@access Public
 exports.getTransactions = async (req, res, next) => {
-  res.send("GET transactions")
+  console.log("GET transactions")
   try {
     const transactions = await Transaction.find();
     console.log(transactions);
